@@ -22,14 +22,21 @@ def main():
     print("Building report...")
     report.build()
 
+    # Load .env before checking for keys — _load_dotenv() reads the .env file in the
+    # project root (gitignored). Without this, os.environ.get() sees nothing even when
+    # .env is present, because the file hasn't been parsed yet.
+    import defect_summarizer as ds
+    ds._load_dotenv()
+
     if (os.environ.get("GROQ_API_KEY") or os.environ.get("ANTHROPIC_API_KEY")) and flagged:
         print("\nAI key found — running optional defect-summarization step...")
-        import defect_summarizer as ds
         for name in flagged:
             result = ds.summarize_flagged_tickets(att, products, name)
             if result is not None:
                 print(f"\nDominant failure modes for {name}:")
                 print(ds.dominant_failure_mode(result).head(10).to_string(index=False))
+            else:
+                print(f"  (No results returned for {name} — check key and library install.)")
     else:
         print("\n(Optional AI-assist step skipped — set GROQ_API_KEY or ANTHROPIC_API_KEY to enable it. "
               "Core report above does not depend on it.)")
