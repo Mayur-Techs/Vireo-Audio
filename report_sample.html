@@ -1,0 +1,583 @@
+<!doctype html>
+<html><head><meta charset="utf-8">
+<title>Vireo CX Signal Report</title>
+<style>
+body { font-family: -apple-system, Segoe UI, Roboto, sans-serif; max-width: 900px; margin: 40px auto; padding: 0 20px; color:#222; }
+h1 { font-size: 22px; } h2 { font-size: 17px; margin-top: 40px; border-top: 1px solid #ddd; padding-top: 16px; }
+h3 { font-size: 15px; color:#a33; }
+.tbl { border-collapse: collapse; width: 100%; font-size: 13px; margin: 10px 0; }
+.tbl th { background:#f2f2f2; text-align:left; padding:6px 8px; }
+.tbl td { padding:6px 8px; border-top:1px solid #eee; }
+.callout { background:#fff7e6; border-left:4px solid #e6a817; padding:12px 16px; margin:16px 0; }
+</style></head><body>
+
+<h1>Vireo Audio — CX Signal Report</h1>
+<div class="callout">
+<b>Headline number:</b> Pulse 2 earbuds replacement rate rose from
+7.6% baseline to
+27.5% —
+concentrated in specific manufacturing lots, worth roughly the quarterly run-rate shown below.
+This is larger than the Rs 4,00,000 Q3 training budget under discussion.
+</div>
+
+<h2>1. Data quality fixes applied</h2>
+<ul>
+  <li>Legacy (<code>legacy_fd</code>) ticket resolution timestamps corrected by +5:30 (UTC→IST) —
+      eliminated 2309 impossible negative handle-time rows.</li>
+  <li>All joins to the agent roster use <code>agent_id</code>, never <code>name</code>
+      (two agents share the name "Kavya Pandey").</li>
+  <li>Blank <code>csat_score</code> excluded from every average (~56% of tickets have no response;
+      policy §8 — a blank is "no response," not a 0).</li>
+</ul>
+
+<h2>2. Agent scorecard — why "bottom ten" needed a fix first</h2>
+<p>The literal ask (rank everyone, flag the bottom 10) puts
+<b>6 of 10</b> flagged agents in Escalations & Warranty — the Tier 2 hardware/warranty
+team, which policy §6 explicitly says should not be volume/CSAT-compared with Tier 1.</p>
+<p><b>Naive bottom 10 (not recommended for training spend as-is):</b></p>
+<table class="dataframe tbl">
+  <thead>
+    <tr style="text-align: right;">
+      <th>agent_id</th>
+      <th>agent_name</th>
+      <th>team</th>
+      <th>tier</th>
+      <th>csat_avg</th>
+      <th>csat_responses</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>A3041</td>
+      <td>Jaspreet Desai</td>
+      <td>Escalations &amp; Warranty</td>
+      <td>2</td>
+      <td>2.44</td>
+      <td>85</td>
+    </tr>
+    <tr>
+      <td>A3042</td>
+      <td>Sneha Sethi</td>
+      <td>Escalations &amp; Warranty</td>
+      <td>2</td>
+      <td>2.45</td>
+      <td>84</td>
+    </tr>
+    <tr>
+      <td>A3040</td>
+      <td>Tarun Fernandes</td>
+      <td>Escalations &amp; Warranty</td>
+      <td>2</td>
+      <td>2.54</td>
+      <td>92</td>
+    </tr>
+    <tr>
+      <td>A3044</td>
+      <td>Pranav Khanna</td>
+      <td>Escalations &amp; Warranty</td>
+      <td>2</td>
+      <td>2.60</td>
+      <td>101</td>
+    </tr>
+    <tr>
+      <td>A3043</td>
+      <td>Kabir Varghese</td>
+      <td>Escalations &amp; Warranty</td>
+      <td>2</td>
+      <td>2.62</td>
+      <td>85</td>
+    </tr>
+    <tr>
+      <td>A3039</td>
+      <td>Sameer Ghosh</td>
+      <td>Escalations &amp; Warranty</td>
+      <td>2</td>
+      <td>2.86</td>
+      <td>111</td>
+    </tr>
+    <tr>
+      <td>A3004</td>
+      <td>Siddharth Kapoor</td>
+      <td>Chat Frontline</td>
+      <td>1</td>
+      <td>2.96</td>
+      <td>122</td>
+    </tr>
+    <tr>
+      <td>A3005</td>
+      <td>Zaid Khanna</td>
+      <td>Chat Frontline</td>
+      <td>1</td>
+      <td>3.00</td>
+      <td>111</td>
+    </tr>
+    <tr>
+      <td>A3007</td>
+      <td>Siddharth Trivedi</td>
+      <td>Chat Frontline</td>
+      <td>1</td>
+      <td>3.01</td>
+      <td>113</td>
+    </tr>
+    <tr>
+      <td>A3006</td>
+      <td>Kavya Pandey</td>
+      <td>Chat Frontline</td>
+      <td>1</td>
+      <td>3.03</td>
+      <td>132</td>
+    </tr>
+  </tbody>
+</table>
+<p><b>Fair Tier-1-only bottom 10 (recommended target for the Q3 training budget):</b></p>
+<table class="dataframe tbl">
+  <thead>
+    <tr style="text-align: right;">
+      <th>agent_id</th>
+      <th>agent_name</th>
+      <th>team</th>
+      <th>csat_avg</th>
+      <th>csat_responses</th>
+      <th>handle_time_avg_h</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>A3004</td>
+      <td>Siddharth Kapoor</td>
+      <td>Chat Frontline</td>
+      <td>2.96</td>
+      <td>122</td>
+      <td>2.89</td>
+    </tr>
+    <tr>
+      <td>A3005</td>
+      <td>Zaid Khanna</td>
+      <td>Chat Frontline</td>
+      <td>3.00</td>
+      <td>111</td>
+      <td>3.54</td>
+    </tr>
+    <tr>
+      <td>A3007</td>
+      <td>Siddharth Trivedi</td>
+      <td>Chat Frontline</td>
+      <td>3.01</td>
+      <td>113</td>
+      <td>4.68</td>
+    </tr>
+    <tr>
+      <td>A3006</td>
+      <td>Kavya Pandey</td>
+      <td>Chat Frontline</td>
+      <td>3.03</td>
+      <td>132</td>
+      <td>4.34</td>
+    </tr>
+    <tr>
+      <td>A3029</td>
+      <td>Kavya Pandey</td>
+      <td>Logistics</td>
+      <td>3.11</td>
+      <td>154</td>
+      <td>38.95</td>
+    </tr>
+    <tr>
+      <td>A3028</td>
+      <td>Vivaan Pandey</td>
+      <td>Logistics</td>
+      <td>3.12</td>
+      <td>145</td>
+      <td>38.20</td>
+    </tr>
+    <tr>
+      <td>A3030</td>
+      <td>Geeta Iyer</td>
+      <td>Logistics</td>
+      <td>3.18</td>
+      <td>139</td>
+      <td>41.59</td>
+    </tr>
+    <tr>
+      <td>A3038</td>
+      <td>Varun Reddy</td>
+      <td>Returns Desk</td>
+      <td>3.19</td>
+      <td>118</td>
+      <td>35.63</td>
+    </tr>
+    <tr>
+      <td>A3036</td>
+      <td>Divya Tiwari</td>
+      <td>Returns Desk</td>
+      <td>3.28</td>
+      <td>103</td>
+      <td>32.79</td>
+    </tr>
+    <tr>
+      <td>A3037</td>
+      <td>Mohammed Desai</td>
+      <td>Returns Desk</td>
+      <td>3.29</td>
+      <td>234</td>
+      <td>36.52</td>
+    </tr>
+    <tr>
+      <td>A3031</td>
+      <td>Zoya Menon</td>
+      <td>Logistics</td>
+      <td>3.29</td>
+      <td>194</td>
+      <td>41.08</td>
+    </tr>
+    <tr>
+      <td>A3027</td>
+      <td>Harpreet Goyal</td>
+      <td>Logistics</td>
+      <td>3.31</td>
+      <td>199</td>
+      <td>41.91</td>
+    </tr>
+    <tr>
+      <td>A3034</td>
+      <td>Meera Pereira</td>
+      <td>Billing</td>
+      <td>3.40</td>
+      <td>154</td>
+      <td>4.95</td>
+    </tr>
+    <tr>
+      <td>A3032</td>
+      <td>Kunal Jain</td>
+      <td>Billing</td>
+      <td>3.41</td>
+      <td>166</td>
+      <td>3.57</td>
+    </tr>
+    <tr>
+      <td>A3035</td>
+      <td>Nisha Rao</td>
+      <td>Billing</td>
+      <td>3.43</td>
+      <td>184</td>
+      <td>4.94</td>
+    </tr>
+  </tbody>
+</table>
+<p><b>Tier 2 summary (reported separately, on resolution-days per policy §6 — not a ranking):</b></p>
+<table class="dataframe tbl">
+  <thead>
+    <tr style="text-align: right;">
+      <th>agent_id</th>
+      <th>agent_name</th>
+      <th>team</th>
+      <th>csat_avg</th>
+      <th>resolution_days_avg</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>A3044</td>
+      <td>Pranav Khanna</td>
+      <td>Escalations &amp; Warranty</td>
+      <td>2.60</td>
+      <td>5.74</td>
+    </tr>
+    <tr>
+      <td>A3043</td>
+      <td>Kabir Varghese</td>
+      <td>Escalations &amp; Warranty</td>
+      <td>2.62</td>
+      <td>5.74</td>
+    </tr>
+    <tr>
+      <td>A3039</td>
+      <td>Sameer Ghosh</td>
+      <td>Escalations &amp; Warranty</td>
+      <td>2.86</td>
+      <td>5.50</td>
+    </tr>
+    <tr>
+      <td>A3041</td>
+      <td>Jaspreet Desai</td>
+      <td>Escalations &amp; Warranty</td>
+      <td>2.44</td>
+      <td>5.48</td>
+    </tr>
+    <tr>
+      <td>A3040</td>
+      <td>Tarun Fernandes</td>
+      <td>Escalations &amp; Warranty</td>
+      <td>2.54</td>
+      <td>5.38</td>
+    </tr>
+    <tr>
+      <td>A3042</td>
+      <td>Sneha Sethi</td>
+      <td>Escalations &amp; Warranty</td>
+      <td>2.45</td>
+      <td>4.73</td>
+    </tr>
+  </tbody>
+</table>
+
+<h2>3. Product/lot anomaly scan (all SKUs, generic rule)</h2>
+<p>Baseline = first half of the 18-month data window; current = second half.
+Flag threshold: current rate ≥ 2x baseline, with ≥50 tickets in each half.</p>
+<table class="dataframe tbl">
+  <thead>
+    <tr style="text-align: right;">
+      <th>product_name</th>
+      <th>family</th>
+      <th>unit_cost_inr</th>
+      <th>baseline_rate_pct</th>
+      <th>baseline_n</th>
+      <th>current_rate_pct</th>
+      <th>current_n</th>
+      <th>flagged</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Pulse 2 True Wireless Earbuds</td>
+      <td>earbuds</td>
+      <td>1480</td>
+      <td>7.60</td>
+      <td>288</td>
+      <td>27.50</td>
+      <td>3918</td>
+      <td>True</td>
+    </tr>
+    <tr>
+      <td>Pulse True Wireless Earbuds</td>
+      <td>earbuds</td>
+      <td>1120</td>
+      <td>11.60</td>
+      <td>586</td>
+      <td>11.80</td>
+      <td>587</td>
+      <td>False</td>
+    </tr>
+    <tr>
+      <td>AirLite Earbuds</td>
+      <td>earbuds</td>
+      <td>760</td>
+      <td>10.90</td>
+      <td>479</td>
+      <td>11.20</td>
+      <td>474</td>
+      <td>False</td>
+    </tr>
+    <tr>
+      <td>Strata 2 Over-Ear Headphones</td>
+      <td>headphones</td>
+      <td>2100</td>
+      <td>11.50</td>
+      <td>157</td>
+      <td>11.10</td>
+      <td>153</td>
+      <td>False</td>
+    </tr>
+    <tr>
+      <td>Nexa 2 Smartwatch</td>
+      <td>watch</td>
+      <td>2450</td>
+      <td>8.20</td>
+      <td>465</td>
+      <td>11.10</td>
+      <td>540</td>
+      <td>False</td>
+    </tr>
+    <tr>
+      <td>Nexa Fit Band</td>
+      <td>watch</td>
+      <td>850</td>
+      <td>8.20</td>
+      <td>257</td>
+      <td>11.00</td>
+      <td>310</td>
+      <td>False</td>
+    </tr>
+    <tr>
+      <td>Arc Neckband</td>
+      <td>earbuds</td>
+      <td>540</td>
+      <td>12.10</td>
+      <td>165</td>
+      <td>11.00</td>
+      <td>200</td>
+      <td>False</td>
+    </tr>
+    <tr>
+      <td>USB-C Braided Cable</td>
+      <td>accessory</td>
+      <td>90</td>
+      <td>5.90</td>
+      <td>51</td>
+      <td>10.30</td>
+      <td>39</td>
+      <td>False</td>
+    </tr>
+    <tr>
+      <td>Orbit Mini Speaker</td>
+      <td>speaker</td>
+      <td>980</td>
+      <td>9.80</td>
+      <td>255</td>
+      <td>9.40</td>
+      <td>385</td>
+      <td>False</td>
+    </tr>
+    <tr>
+      <td>Nexa Smartwatch</td>
+      <td>watch</td>
+      <td>1900</td>
+      <td>7.50</td>
+      <td>187</td>
+      <td>8.80</td>
+      <td>182</td>
+      <td>False</td>
+    </tr>
+    <tr>
+      <td>65W GaN Charger</td>
+      <td>accessory</td>
+      <td>610</td>
+      <td>11.90</td>
+      <td>67</td>
+      <td>8.50</td>
+      <td>82</td>
+      <td>False</td>
+    </tr>
+    <tr>
+      <td>Strata 3 Over-Ear Headphones</td>
+      <td>headphones</td>
+      <td>2650</td>
+      <td>9.50</td>
+      <td>348</td>
+      <td>8.50</td>
+      <td>388</td>
+      <td>False</td>
+    </tr>
+    <tr>
+      <td>Pulse Charging Case (spare)</td>
+      <td>accessory</td>
+      <td>620</td>
+      <td>3.80</td>
+      <td>26</td>
+      <td>7.50</td>
+      <td>187</td>
+      <td>False</td>
+    </tr>
+    <tr>
+      <td>Orbit Smart Speaker</td>
+      <td>speaker</td>
+      <td>2300</td>
+      <td>7.80</td>
+      <td>193</td>
+      <td>7.00</td>
+      <td>214</td>
+      <td>False</td>
+    </tr>
+  </tbody>
+</table>
+
+        <h3>Flagged SKU: Pulse 2 True Wireless Earbuds</h3>
+        <p>Baseline (first half of data): <b>7.6%</b> &nbsp;→&nbsp;
+           Current (second half): <b>27.5%</b>
+           (n=3918)</p>
+        
+    <svg viewBox="0 0 760 220" width="100%" style="max-width:760px">
+      <text x="50" y="16" font-size="13" font-weight="600">Monthly replacement rate — Pulse 2 True Wireless Earbuds (%)</text>
+      <line x1="50" y1="30" x2="50" y2="180" stroke="#999"/>
+      <line x1="50" y1="180" x2="740" y2="180" stroke="#999"/>
+      <text x="14" y="35" font-size="10">50</text>
+      <text x="14" y="180" font-size="10">0</text>
+      <polyline fill="none" stroke="#c0392b" stroke-width="2" points="50.0,180.0 93.1,30.0 136.2,180.0 179.4,94.3 222.5,180.0 265.6,149.0 308.8,159.3 351.9,161.2 395.0,146.9 438.1,138.9 481.2,121.5 524.4,89.5 567.5,82.5 610.6,72.1 653.8,68.9 696.9,110.0 740.0,128.0"/>
+      <text x="50.0" y="195" font-size="10" text-anchor="middle">2025-02</text><text x="136.2" y="195" font-size="10" text-anchor="middle">2025-04</text><text x="222.5" y="195" font-size="10" text-anchor="middle">2025-06</text><text x="308.8" y="195" font-size="10" text-anchor="middle">2025-08</text><text x="395.0" y="195" font-size="10" text-anchor="middle">2025-10</text><text x="481.2" y="195" font-size="10" text-anchor="middle">2025-12</text><text x="567.5" y="195" font-size="10" text-anchor="middle">2026-02</text><text x="653.8" y="195" font-size="10" text-anchor="middle">2026-04</text><text x="740.0" y="195" font-size="10" text-anchor="middle">2026-06</text>
+    </svg>
+        <p><b>Excess replacements vs. baseline expectation:</b> 780
+           &nbsp;·&nbsp; <b>True unit cost</b> (policy §5, unit cost + Rs 340): Rs 1820
+           &nbsp;·&nbsp; <b>Excess cost, this window:</b> Rs 1,419,069
+           &nbsp;·&nbsp; <b>Run-rate per quarter:</b> Rs 474,762</p>
+        <p>Lot concentration among replacement tickets (top 10 lots):</p>
+        <table class="dataframe tbl">
+  <thead>
+    <tr style="text-align: right;">
+      <th>lot_code</th>
+      <th>replacement_count</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>PL2-2510-3</td>
+      <td>94</td>
+    </tr>
+    <tr>
+      <td>PL2-2510-1</td>
+      <td>93</td>
+    </tr>
+    <tr>
+      <td>PL2-2510-4</td>
+      <td>93</td>
+    </tr>
+    <tr>
+      <td>PL2-2511-3</td>
+      <td>91</td>
+    </tr>
+    <tr>
+      <td>PL2-2510-2</td>
+      <td>87</td>
+    </tr>
+    <tr>
+      <td>PL2-2511-4</td>
+      <td>86</td>
+    </tr>
+    <tr>
+      <td>PL2-2511-2</td>
+      <td>79</td>
+    </tr>
+    <tr>
+      <td>PL2-2511-1</td>
+      <td>69</td>
+    </tr>
+    <tr>
+      <td>PL2-2512-4</td>
+      <td>58</td>
+    </tr>
+    <tr>
+      <td>PL2-2512-2</td>
+      <td>54</td>
+    </tr>
+  </tbody>
+</table>
+        <p style="color:#666;font-size:12px">Lot join: 1100
+           of 1101 replacement tickets resolved to a lot code
+           (1 unresolved even after the customer_id+SKU fallback join).</p>
+        
+
+<h2>4. Company-wide CSAT trend (context)</h2>
+
+    <svg viewBox="0 0 760 220" width="100%" style="max-width:760px">
+      <text x="50" y="16" font-size="13" font-weight="600">Company-wide monthly CSAT (blanks excluded)</text>
+      <line x1="50" y1="30" x2="50" y2="180" stroke="#999"/>
+      <line x1="50" y1="180" x2="740" y2="180" stroke="#999"/>
+      <text x="14" y="35" font-size="10">4</text>
+      <text x="14" y="180" font-size="10">3</text>
+      <polyline fill="none" stroke="#c0392b" stroke-width="2" points="50.0,82.9 90.6,100.1 131.2,73.8 171.8,88.4 212.4,64.8 252.9,30.0 293.5,94.1 334.1,97.2 374.7,96.6 415.3,62.5 455.9,85.3 496.5,118.4 537.1,151.8 577.6,180.0 618.2,145.6 658.8,127.6 699.4,104.0 740.0,97.9"/>
+      <text x="50.0" y="195" font-size="10" text-anchor="middle">2025-01</text><text x="131.2" y="195" font-size="10" text-anchor="middle">2025-03</text><text x="212.4" y="195" font-size="10" text-anchor="middle">2025-05</text><text x="293.5" y="195" font-size="10" text-anchor="middle">2025-07</text><text x="374.7" y="195" font-size="10" text-anchor="middle">2025-09</text><text x="455.9" y="195" font-size="10" text-anchor="middle">2025-11</text><text x="537.1" y="195" font-size="10" text-anchor="middle">2026-01</text><text x="618.2" y="195" font-size="10" text-anchor="middle">2026-03</text><text x="699.4" y="195" font-size="10" text-anchor="middle">2026-05</text>
+    </svg>
+<p style="font-size:12px;color:#666">Correlational only — this does not on its own prove the
+product defect caused the CSAT dip, but the timing lines up closely with the anomaly window above.</p>
+
+<h2>5. Known gaps — read before presenting this</h2>
+<ul>
+  <li>Neha's email references a "hardware triage rota (Kavya's four plus the warranty team)" that
+      does not map cleanly onto any roster field — this report uses the roster's <code>tier</code>
+      and <code>team</code> columns, which is a documented policy-based split, not a re-creation of
+      that informal rota.</li>
+  <li>"~40 junk IVR tickets" (per Sameer's email) is a narrower claim than a literal
+      <code>[IVR transcript]</code> text match, which hits far more rows, most of them legible —
+      isolating the true unusable subset needs a text-quality heuristic not yet built here.</li>
+</ul>
+
+</body></html>

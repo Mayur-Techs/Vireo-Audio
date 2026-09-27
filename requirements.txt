@@ -1,0 +1,5 @@
+pandas>=2.0
+
+# Optional, only needed if you set ANTHROPIC_API_KEY to enable the
+# defect-summarization step in defect_summarizer.py:
+# anthropic>=0.40
