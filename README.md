@@ -93,15 +93,38 @@ current-half rate elevation continues, and does not prove a manufacturing defect
 | Item | Detail |
 |---|---|
 | **Core run cost** | **Rs 0 paid model cost.** All analytics (scorecard, anomaly scan, lot breakdown) use pandas only. |
-| Optional AI step | `src/defect_summarizer.py` can classify failure modes on flagged-SKU tickets if `ANTHROPIC_API_KEY` is set. It is **skipped by default**. |
-| AI accuracy claim | None. The optional step was not invoked in the final submission, and no accuracy number is claimed. |
+| Optional AI step (Groq) | `src/defect_summarizer.py` uses Groq (`GROQ_API_KEY`) if available — checked first. |
+| Optional AI step (Anthropic) | Falls back to `ANTHROPIC_API_KEY` if Groq key is not set. |
+| AI accuracy claim | None. The AI step was not invoked in the final submission, and no accuracy number is claimed. |
+| Key safety | API keys go in a `.env` file (project root) which is in `.gitignore` and **never committed**. |
 
-To enable the optional AI step:
+### To enable the optional AI step with Groq (recommended):
+
+1. Create a `.env` file in the project root (already in `.gitignore` — safe to create):
+   ```
+   GROQ_API_KEY=gsk_your_key_here
+   ```
+2. Install the Groq library:
+   ```
+   pip install groq>=0.9
+   ```
+3. Run as normal:
+   ```
+   python run.py
+   ```
+   The step will activate automatically when it detects the key.
+
+### To use Anthropic Claude instead:
+
 ```
-export ANTHROPIC_API_KEY=sk-ant-...   # or set in Windows: $env:ANTHROPIC_API_KEY=...
-# then uncomment anthropic>=0.40 in requirements.txt and install it
+# In .env:
+ANTHROPIC_API_KEY=sk-ant-your_key_here
+```
+```
+pip install anthropic>=0.40
 python run.py
 ```
+
 
 ---
 

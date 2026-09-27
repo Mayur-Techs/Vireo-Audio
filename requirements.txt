@@ -1,5 +1,15 @@
 pandas>=2.0
 
-# Optional, only needed if you set ANTHROPIC_API_KEY to enable the
-# defect-summarization step in defect_summarizer.py:
+# Optional AI-assist step (src/defect_summarizer.py).
+# Uncomment ONE of these and install it if you want failure-mode summaries
+# for flagged-SKU tickets. The core analytics (Modules A and B) don't need either.
+#
+# Option 1 — Groq (fast, free tier available):
+#   pip install groq>=0.9
+#   set GROQ_API_KEY=gsk_...
+# groq>=0.9
+#
+# Option 2 — Anthropic Claude:
+#   pip install anthropic>=0.40
+#   set ANTHROPIC_API_KEY=sk-ant-...
 # anthropic>=0.40

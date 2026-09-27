@@ -3,3 +3,10 @@ outputs/
 fresh_env/
 __pycache__/
 *.pyc
+
+# API keys and environment files — never commit these
+.env
+.env.*
+*.env
+*_API_KEY.txt
+secrets.txt

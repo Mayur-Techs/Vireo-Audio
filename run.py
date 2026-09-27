@@ -22,8 +22,8 @@ def main():
     print("Building report...")
     report.build()
 
-    if os.environ.get("ANTHROPIC_API_KEY") and flagged:
-        print("\nANTHROPIC_API_KEY found — running optional defect-summarization step...")
+    if (os.environ.get("GROQ_API_KEY") or os.environ.get("ANTHROPIC_API_KEY")) and flagged:
+        print("\nAI key found — running optional defect-summarization step...")
         import defect_summarizer as ds
         for name in flagged:
             result = ds.summarize_flagged_tickets(att, products, name)
@@ -31,7 +31,7 @@ def main():
                 print(f"\nDominant failure modes for {name}:")
                 print(ds.dominant_failure_mode(result).head(10).to_string(index=False))
     else:
-        print("\n(Optional AI-assist step skipped — set ANTHROPIC_API_KEY to enable it. "
+        print("\n(Optional AI-assist step skipped — set GROQ_API_KEY or ANTHROPIC_API_KEY to enable it. "
               "Core report above does not depend on it.)")
 
     print("\nDone. Open outputs/report.html in a browser.")
